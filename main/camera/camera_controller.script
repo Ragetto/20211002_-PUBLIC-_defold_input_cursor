@@ -31,11 +31,13 @@ end
 
 function update(self, dt)
 
+	-- JC 02/10/2021 18:29 # This is where I make the cursor follow the mouse position in real time
+	-- the rest is in the input function
 	msg.post("cursor#cursor", "input", { action_id = self.action_id, action = self.action })
+
+	------------------------------------------------------------------------------------------
 	
 	self.mouse_pos_old = self.mouse_pos_cur
-
-	---
 
 	if self.mouse_pressed == 0 then
 		vector_dir = vmath.vector3(0,0,0)
@@ -69,11 +71,6 @@ function update(self, dt)
 	
 end
 
-
-function on_message(self, message_id, message, sender)
-end
-
-
 function on_input(self, action_id, action)
 	
 	self.mouse_pos_cur = vmath.vector3(action.x, action.y, 0)
@@ -95,8 +92,4 @@ function on_input(self, action_id, action)
 	elseif action.released then
 		self.mouse_pressed = 2
 	end
-end
-
-
-function on_reload(self)
 end
