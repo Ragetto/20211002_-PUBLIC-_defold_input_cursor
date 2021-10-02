@@ -1,0 +1,71 @@
+---========================---
+---== LUA MODULE IMPORTS ==---
+---========================---
+local debugdraw = require "lua-modules.libs-defold.debug-draw.debug-draw"
+local defmath = require "lua-modules.libs-defold.defmath.defmath"
+local lume = require "lua-modules.libs-external.lume.lume"
+local gui_extra = require "lua-modules.libs-defold.gui_extra.gui_extra"
+local monarch = require "lua-modules.libs-defold.monarch.monarch"
+local rc = require "lua-modules.libs-defold.rendercam.rendercam"
+local csv = require "lua-modules.libs-defold.csv-importer.csv-importer"
+local cursor = require "lua-modules.libs-defold.defold-input.cursor"
+local c = require "lua-modules.gamedata.constants"
+local f = require "lua-modules.libs-self.functions"
+
+---========================---
+---========================---
+
+function init(self)
+
+	--== Building info ==--
+	self.level_current = 1
+	
+	--== Animation ==--
+	local anim = nil
+	anim = hash("building_main_level_1")
+	sprite.play_flipbook("#sprite", anim)
+	
+end
+
+function update(self, dt)
+	
+	---------------------------------------------------
+	----============ BUILDING UPGRADE ============-----
+	---------------------------------------------------
+	
+	if self.upgradable == 1 then
+		print("Upgraded!")
+		self.level_current = self.level_current + 1
+		self.upgradable = 0
+	end
+
+	---------------------------------------------------	
+	---------------------------------------------------
+	---------============= DEBUG =============---------
+	---------------------------------------------------
+	---------------------------------------------------
+
+	label.set_text("#debug", "Level: "..self.level_current)
+	
+end
+
+function on_message(self, message_id, message, sender)
+	-- JC 05/09/2021 22:37 # When the user clicks a building (for now it directly tries to upgrade)
+	if message_id == cursor.CLICKED then
+		self.upgradable = 1	
+	end
+	
+	
+	-- JC 05/09/2021 22:37 # Generic interaction with the buildings
+	if message_id == cursor.OVER then
+		self.over_pos = go.get_position()
+		go.set_position(vmath.vector3(self.over_pos.x, self.over_pos.y, 1))
+		go.animate("#sprite", "tint.w", go.PLAYBACK_ONCE_FORWARD, 1.5, go.EASING_OUTQUAD, 0.1)
+	elseif message_id == cursor.OUT then
+		local pos = go.get_position()
+		go.set_position(vmath.vector3(pos.x, pos.y, self.over_pos.z))
+		go.animate("#sprite", "tint.w", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTQUAD, 0.1)
+	elseif message_id == cursor.PRESSED or message_id == cursor.RELEASED then
+		-- N/A
+	end
+end
